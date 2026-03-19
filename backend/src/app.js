@@ -32,3 +32,11 @@ app.get("/gabriel-ruan-gabrili/ruan", (req, res) => {
     info: "Aluno de Info II",
   });
 });
+
+app.get("/gabriel-ruan-gabrili/gabrili", (req, res) => {
+  res.json({
+    nome: "Gabrili",
+    matricula: "20251131000191",
+    info: "Téc.info",
+  });
+});
