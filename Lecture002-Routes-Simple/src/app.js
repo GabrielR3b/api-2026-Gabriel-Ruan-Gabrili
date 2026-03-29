@@ -1,5 +1,5 @@
 import express from "express";
-import { listaDeLivros } from "src/fake_data.js";
+import { listaDeLivros } from "./fake_data.js";
 
 const app = express();
 
@@ -8,6 +8,43 @@ app.use(express.json());
 
 // Teste
 console.log(listaDeLivros);
+
+app.get("/", (req, res) => {
+  res.send({ message: "Servidor em Execução", success: true });
+});
+
+app.get("/equipe", (req, res) => {
+  res.send([
+    { nome: "Fulano", curso: "TI" },
+    { nome: "Fulano", curso: "TI" },
+    { nome: "Ciclano", curso: "TI" },
+  ]);
+});
+
+
+app.get("/gabriel-ruan-gabrili/gabriel", (req, res) => {
+  res.json({
+    nome: "Gabriel",
+    matricula: "20251131000248",
+    info: "Apoiador do Intercurso",
+  });
+});
+
+app.get("/gabriel-ruan-gabrili/ruan", (req, res) => {
+  res.json({
+    nome: "Ruan",
+    matricula: "20251131000094",
+    info: "Aluno de Info II",
+  });
+});
+
+app.get("/gabriel-ruan-gabrili/gabrili", (req, res) => {
+  res.json({
+    nome: "Gabrili",
+    matricula: "20251131000191",
+    info: "Téc.info",
+  });
+});
 
 // GET - listar todos os livros
 app.get("/api/livros", (req, res) => {
