@@ -1,5 +1,5 @@
 import express from "express";
-import { listaDeLivros } from "./fake_data.js";
+import { listaDeLivros, listaDeEditoras } from "./fake_data.js";
 
 const app = express();
 
@@ -8,6 +8,7 @@ app.use(express.json());
 
 // Teste
 console.log(listaDeLivros);
+console.log(listaDeEditoras);
 
 app.get("/", (req, res) => {
   res.send({ message: "Servidor em Execução", success: true });
@@ -15,9 +16,9 @@ app.get("/", (req, res) => {
 
 app.get("/equipe", (req, res) => {
   res.send([
-    { nome: "Fulano", curso: "TI" },
-    { nome: "Fulano", curso: "TI" },
-    { nome: "Ciclano", curso: "TI" },
+    { nome: "Gabriel", curso: "TI" },
+    { nome: "Gabrili", curso: "TI" },
+    { nome: "Ruan", curso: "TI" },
   ]);
 });
 
@@ -231,6 +232,143 @@ app.patch("/api/livros/:livroId", (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Erro interno do servidor",
+      error: error.message,
+    });
+  }
+});
+
+/* LISTAR editoras */
+app.get("/api/editoras", (req, res) => {
+  res.json(listaDeEditoras);
+});
+
+/* GET - buscar editora por ID */
+app.get("/api/editoras/:id", (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        mensagem: "ID inválido!",
+      });
+    }
+
+    const editora = listaDeEditoras.find(
+      (editora) => editora.id === id
+    );
+
+    if (!editora) {
+      return res.status(404).json({
+        mensagem: "Editora não encontrada!",
+      });
+    }
+
+    res.status(200).json(editora);
+
+  } catch (error) {
+    res.status(500).json({
+      mensagem: "Erro interno do servidor",
+      error: error.message,
+    });
+  }
+});
+
+/* ADICIONAR editora */
+app.post("/api/editoras", (req, res) => {
+  const novaEditora = req.body;
+
+  listaDeEditoras.push(novaEditora);
+
+  res.status(201).json({
+    mensagem: "Editora adicionada com sucesso",
+    editora: novaEditora,
+  });
+});
+
+/* ATUALIZAR editora */
+app.put("/api/editoras/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const dadosAtualizados = req.body;
+
+  const index = listaDeEditoras.findIndex(
+    (editora) => editora.id === id
+  );
+
+  if (index !== -1) {
+    listaDeEditoras[index] = {
+      ...listaDeEditoras[index],
+      ...dadosAtualizados,
+    };
+
+    res.json({
+      mensagem: "Editora atualizada com sucesso",
+      editora: listaDeEditoras[index],
+    });
+  } else {
+    res.status(404).json({
+      mensagem: "Editora não encontrada",
+    });
+  }
+});
+
+/* REMOVER editora */
+app.delete("/api/editoras/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const index = listaDeEditoras.findIndex(
+    (editora) => editora.id === id
+  );
+
+  if (index !== -1) {
+    const removida = listaDeEditoras.splice(index, 1);
+
+    res.json({
+      mensagem: "Editora removida com sucesso",
+      editora: removida,
+    });
+  } else {
+    res.status(404).json({
+      mensagem: "Editora não encontrada",
+    });
+  }
+});
+
+// PATCH - atualizar parcialmente editora
+app.patch("/api/editoras/:id", (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        mensagem: "ID inválido!",
+      });
+    }
+
+    const { nome, cnpj } = req.body;
+
+    const index = listaDeEditoras.findIndex(
+      (editora) => editora.id === id
+    );
+
+    if (index === -1) {
+      return res.status(404).json({
+        mensagem: "Editora não encontrada!",
+      });
+    }
+
+    if (nome !== undefined)
+      listaDeEditoras[index].nome = nome;
+
+    if (cnpj !== undefined)
+      listaDeEditoras[index].cnpj = cnpj;
+
+    return res.status(200).json({
+      mensagem: "Editora atualizada!",
+      editora: listaDeEditoras[index],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro interno do servidor",
       error: error.message,
     });
   }
